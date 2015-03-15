@@ -62,7 +62,7 @@ $ ->
         type: 'DELETE'
         data: id: @props.id
       .done (data) =>
-        console.log(data)
+        console.log('delete success')
       .fail (xhr, status, err) =>
         console.error(status, err.toString())
 
