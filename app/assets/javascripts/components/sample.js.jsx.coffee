@@ -45,12 +45,34 @@ $ ->
   CommentList = React.createClass
     render: ->
       commentNodes = @props.data.map (comment) ->
-        `<Comment author={ comment.author } text={ comment.text }></Comment>`
+        `<Comment id={ comment.id } author={ comment.author } text={ comment.text }></Comment>` # thisがWindowオブジェクトに..?
       `<div className="commentList">
         <ul className="list-group">
           { commentNodes }
         </ul>
        </div>`
+
+  Comment = React.createClass
+    handleClick: (e) ->
+      # できればstateを利用したい
+      $(@refs.comment.getDOMNode()).remove()
+      $.ajax
+        url: '/api/comments/' + @props.id
+        dataType: 'json'
+        type: 'DELETE'
+        data: id: @props.id
+      .done (data) =>
+        console.log(data)
+      .fail (xhr, status, err) =>
+        console.error(status, err.toString())
+
+    render: ->
+      #rawMarkup = converter.makeHtml @props.children.toString()
+      `<li className="list-group-item" ref="comment">
+      { this.props.author } : { this.props.text}
+      <a className="comment-delete-btn btn-link" onClick={ this.handleClick }>削除</a>
+     </li>`
+
   CommentForm = React.createClass
     handleSubmit: (e) ->
       e.preventDefault()
@@ -69,14 +91,6 @@ $ ->
          </div>
          <input className="btn btn-primary" type="submit" value="コメント" />
        </form>`
-
-
-  Comment = React.createClass
-    render: ->
-      #rawMarkup = converter.makeHtml @props.children.toString()
-      `<li className="list-group-item">
-        { this.props.author } : { this.props.text}
-       </li>`
 
   React.render(
     #`<CommentBox url="/api/comments" pollInterval={ 2000 } />`,
